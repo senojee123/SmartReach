@@ -134,7 +134,11 @@ export const createCampaign = async (req, res) => {
   }
 
   try {
+    // Generate unique campaignId (e.g. CMP-105234)
+    const campaignId = 'CMP-' + Math.floor(100000 + Math.random() * 900000);
+
     const newCampaign = await Campaign.create({
+      campaignId,
       campaignName,
       description,
       campaignType,

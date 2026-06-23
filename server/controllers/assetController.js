@@ -118,8 +118,12 @@ export const uploadAsset = async (req, res) => {
     // Call Cloudinary/fallback service
     const uploadResult = await uploadFile(req.file);
 
+    // Generate unique assetId (e.g. AST-105234)
+    const assetId = 'AST-' + Math.floor(100000 + Math.random() * 900000);
+
     // Save metadata in database
     const newAsset = await Asset.create({
+      assetId,
       assetName: req.file.originalname,
       assetType: uploadResult.assetType,
       fileUrl: uploadResult.fileUrl,
