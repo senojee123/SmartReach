@@ -15,6 +15,7 @@ import CampaignTargeting from './pages/CampaignTargeting';
 import CampaignPreview from './pages/CampaignPreview';
 import AssetLibrary from './pages/AssetLibrary';
 import Player from './pages/Player';
+import { SportsPlayer, FestivalPlayer, AdsPlayer, AlertsPlayer } from './pages/ScreenWrappers';
 import MonitoringDashboard from './pages/MonitoringDashboard';
 import AnalyticsDashboard from './pages/AnalyticsDashboard';
 import SponsorReporting from './pages/SponsorReporting';
@@ -61,6 +62,12 @@ function App() {
           {/* Standalone Player Screen */}
           <Route path="/player" element={<Player />} />
           <Route path="/player/:boardId" element={<Player />} />
+
+          {/* Standalone Kiosk Screen Routes */}
+          <Route path="/sports" element={<SportsPlayer />} />
+          <Route path="/festival" element={<FestivalPlayer />} />
+          <Route path="/ads" element={<AdsPlayer />} />
+          <Route path="/alerts" element={<AlertsPlayer />} />
 
           {/* Live Demo Network */}
           <Route path="/demo/live-network" element={<LiveNetworkDemo />} />

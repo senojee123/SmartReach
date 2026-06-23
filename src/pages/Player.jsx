@@ -12,16 +12,17 @@ import {
 
 const CACHE_NAME = 'smartreach-media';
 
-const Player = () => {
+const Player = ({ boardIdProp }) => {
   const { boardId: routeBoardId } = useParams();
+  const effectiveBoardId = boardIdProp || routeBoardId;
 
   // Authentication & Pairing state
   const [deviceToken, setDeviceToken] = useState(() => {
-    if (routeBoardId) return `demo-token-${routeBoardId}`;
+    if (effectiveBoardId) return `demo-token-${effectiveBoardId}`;
     return localStorage.getItem('deviceToken');
   });
   const [boardId, setBoardId] = useState(() => {
-    if (routeBoardId) return routeBoardId;
+    if (effectiveBoardId) return effectiveBoardId;
     return localStorage.getItem('boardId') || '';
   });
   const [boardName, setBoardName] = useState(() => {
@@ -115,8 +116,8 @@ const Player = () => {
       const uptime = Math.round((Date.now() - startTimeRef.current) / 1000);
 
       try {
-        if (routeBoardId) {
-          await axios.post(`/api/demo/heartbeat/${routeBoardId}`, {
+        if (effectiveBoardId) {
+          await axios.post(`/api/demo/heartbeat/${effectiveBoardId}`, {
             cpuUsage,
             memoryUsage,
             storageUsage,
@@ -135,7 +136,7 @@ const Player = () => {
           });
         }
         setIsOnline(true);
-        if (!routeBoardId) {
+        if (!effectiveBoardId) {
           syncOfflineLogs();
         }
       } catch (err) {
@@ -146,9 +147,9 @@ const Player = () => {
 
     pingHeartbeat();
 
-    const interval = setInterval(pingHeartbeat, routeBoardId ? 5000 : 30000);
+    const interval = setInterval(pingHeartbeat, effectiveBoardId ? 5000 : 30000);
     return () => clearInterval(interval);
-  }, [deviceToken, routeBoardId]);
+  }, [deviceToken, effectiveBoardId]);
 
   // 4. Playlist Synchronization & Caching
   const syncPlaylist = async () => {
@@ -157,8 +158,8 @@ const Player = () => {
     try {
       setCacheStatus('Syncing playlist...');
       let data;
-      if (routeBoardId) {
-        const res = await axios.get(`/api/demo/playlist/${routeBoardId}`);
+      if (effectiveBoardId) {
+        const res = await axios.get(`/api/demo/playlist/${effectiveBoardId}`);
         data = res.data;
       } else {
         const res = await axios.get('/api/player/playlist', {
@@ -168,17 +169,17 @@ const Player = () => {
       }
 
       setBoardId(data.boardId);
-      if (!routeBoardId) localStorage.setItem('boardId', data.boardId);
+      if (!effectiveBoardId) localStorage.setItem('boardId', data.boardId);
       
       setBoardName(data.boardName);
-      if (!routeBoardId) localStorage.setItem('boardName', data.boardName);
+      if (!effectiveBoardId) localStorage.setItem('boardName', data.boardName);
 
       if (data.boardType) setBoardType(data.boardType);
       if (data.region) setBoardRegion(data.region);
 
       if (data.playlist && data.playlist.length > 0) {
         setPlaylist(data.playlist);
-        if (!routeBoardId) {
+        if (!effectiveBoardId) {
           localStorage.setItem('offlinePlaylist', JSON.stringify(data.playlist));
           await cacheMediaFiles(data.playlist);
         }
@@ -187,7 +188,7 @@ const Player = () => {
       }
     } catch (err) {
       console.error('Failed to sync playlist:', err);
-      if (!routeBoardId) {
+      if (!effectiveBoardId) {
         const cached = localStorage.getItem('offlinePlaylist');
         if (cached) {
           setPlaylist(JSON.parse(cached));
@@ -265,9 +266,9 @@ const Player = () => {
     if (!deviceToken) return;
     syncPlaylist();
 
-    const interval = setInterval(syncPlaylist, routeBoardId ? 5000 : 10000);
+    const interval = setInterval(syncPlaylist, effectiveBoardId ? 5000 : 10000);
     return () => clearInterval(interval);
-  }, [deviceToken, routeBoardId]);
+  }, [deviceToken, effectiveBoardId]);
 
   // 5. Caching Media Files locally in Browser Cache API
   const cacheMediaFiles = async (items) => {
@@ -333,8 +334,8 @@ const Player = () => {
 
     if (navigator.onLine && deviceToken) {
       try {
-        if (routeBoardId) {
-          await axios.post(`/api/demo/log/${routeBoardId}`, logData);
+        if (effectiveBoardId) {
+          await axios.post(`/api/demo/log/${effectiveBoardId}`, logData);
         } else {
           await axios.post('/api/player/log', logData, {
             headers: { Authorization: `Bearer ${deviceToken}` }
@@ -342,10 +343,10 @@ const Player = () => {
         }
       } catch (err) {
         console.error('Failed to send play log:', err);
-        if (!routeBoardId) cacheLogLocally(logData);
+        if (!effectiveBoardId) cacheLogLocally(logData);
       }
     } else {
-      if (!routeBoardId) cacheLogLocally(logData);
+      if (!effectiveBoardId) cacheLogLocally(logData);
     }
   };
 
@@ -571,7 +572,7 @@ const Player = () => {
       ) : currentAsset ? (
         <div className="w-full h-screen flex items-center justify-center relative bg-black">
           {/* Top Demo Overlay Bar */}
-          {routeBoardId && (
+          {effectiveBoardId && (
             <div className="absolute top-0 left-0 right-0 z-40 bg-black/60 backdrop-blur-md border-b border-white/10 px-6 py-3 flex justify-between items-center select-none font-sans text-xs">
               <div className="flex items-center space-x-3 text-left">
                 <div className="flex items-center space-x-1.5 bg-blue-500/15 border border-blue-500/30 px-2 py-0.5 rounded text-blue-400 font-bold tracking-wider uppercase text-[9px]">
@@ -612,7 +613,7 @@ const Player = () => {
           )}
 
           {/* Bottom Demo Overlay Bar */}
-          {routeBoardId && (
+          {effectiveBoardId && (
             <div className="absolute bottom-0 left-0 right-0 z-40 bg-gradient-to-t from-black/95 via-black/80 to-transparent px-6 py-6 flex justify-between items-end select-none font-sans">
               <div className="space-y-1 text-left">
                 <span className="text-[10px] font-extrabold text-blue-400 uppercase tracking-widest block">Active Campaign</span>
@@ -644,8 +645,8 @@ const Player = () => {
             </div>
           )}
 
-          {/* Dynamic QR Code overlay for scanner engagement (only if not routeBoardId to keep demo screens clean, or show in small size) */}
-          {boardId && !routeBoardId && (
+          {/* Dynamic QR Code overlay for scanner engagement (only if not effectiveBoardId to keep demo screens clean, or show in small size) */}
+          {boardId && !effectiveBoardId && (
             <div className="absolute bottom-6 right-6 z-40 bg-white/95 backdrop-blur border border-white/20 p-3.5 rounded-2xl flex items-center space-x-3 shadow-2xl max-w-xs text-slate-950 animate-fade-in">
               <img 
                 src={`https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(
