@@ -24,9 +24,13 @@ if (hasCloudinaryConfig()) {
   });
   console.log('Cloudinary Storage Service Configured.');
 } else {
-  // Ensure the local uploads directory exists
-  if (!fs.existsSync(UPLOADS_DIR)) {
-    fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+  // Ensure the local uploads directory exists (skip on Vercel to prevent read-only crashes)
+  if (!process.env.VERCEL && !fs.existsSync(UPLOADS_DIR)) {
+    try {
+      fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+    } catch (err) {
+      console.warn('Failed to create local uploads directory:', err.message);
+    }
   }
   console.log('======================================================================');
   console.log('  Cloudinary environment credentials not found.');
