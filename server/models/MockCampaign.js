@@ -197,6 +197,7 @@ class MockCampaign {
       endDate: data.endDate,
       startTime: data.startTime || '00:00',
       endTime: data.endTime || '23:59',
+      campaignText: data.campaignText || '',
       createdBy: data.createdBy,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()

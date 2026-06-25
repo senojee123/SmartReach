@@ -389,8 +389,8 @@ const Player = ({ boardIdProp }) => {
     const activeAsset = playlist[currentIndex];
     resolveAssetSource(activeAsset);
 
-    // Setup duration timers for images. Videos are handled by HTML5 onEnded event listeners
-    if (activeAsset.assetType === 'Image') {
+    // Setup duration timers for images and text slides. Videos are handled by HTML5 onEnded event listeners
+    if (activeAsset.assetType === 'Image' || activeAsset.assetType === 'Text') {
       playTimerRef.current = setTimeout(() => {
         recordPlayLog(activeAsset);
         playNextAsset();
@@ -595,7 +595,20 @@ const Player = ({ boardIdProp }) => {
             </div>
           )}
 
-          {currentAsset.assetType === 'Image' ? (
+          {currentAsset.assetType === 'Text' ? (
+            <div className="w-full h-full flex flex-col justify-center items-center p-12 text-center bg-gradient-to-br from-indigo-950 via-slate-900 to-blue-950 border-8 border-indigo-500/20 select-none">
+              <div className="max-w-4xl space-y-6 animate-fade-in px-4">
+                {currentAsset.type && (
+                  <span className="text-[10px] uppercase font-extrabold text-indigo-400 tracking-widest block bg-indigo-500/10 px-3 py-1.5 rounded-full w-max mx-auto border border-indigo-500/20">
+                    {currentAsset.type}
+                  </span>
+                )}
+                <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight text-white drop-shadow-md font-sans">
+                  {currentAsset.textContent || currentAsset.title}
+                </h2>
+              </div>
+            </div>
+          ) : currentAsset.assetType === 'Image' ? (
             <img 
               src={currentAssetUrl || currentAsset.fileUrl} 
               alt={currentAsset.assetName} 

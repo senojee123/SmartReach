@@ -103,6 +103,7 @@ export const getCampaignById = async (req, res) => {
       campaignId: campaign.campaignId,
       campaignName: campaign.campaignName,
       description: campaign.description,
+      campaignText: campaign.campaignText,
       campaignType: campaign.campaignType,
       status: campaign.status,
       startDate: campaign.startDate,
@@ -127,7 +128,7 @@ export const getCampaignById = async (req, res) => {
 // @route   POST /api/campaigns
 // @access  Private
 export const createCampaign = async (req, res) => {
-  const { campaignName, description, campaignType, startDate, endDate, startTime, endTime, status, assetIds } = req.body;
+  const { campaignName, description, campaignText, campaignType, startDate, endDate, startTime, endTime, status, assetIds } = req.body;
 
   if (!campaignName || !campaignType || !startDate || !endDate) {
     return res.status(400).json({ message: 'Please provide all required fields' });
@@ -141,6 +142,7 @@ export const createCampaign = async (req, res) => {
       campaignId,
       campaignName,
       description,
+      campaignText: campaignText || '',
       campaignType,
       startDate: new Date(startDate),
       endDate: new Date(endDate),
@@ -168,7 +170,7 @@ export const createCampaign = async (req, res) => {
 // @route   PUT /api/campaigns/:id
 // @access  Private
 export const updateCampaign = async (req, res) => {
-  const { campaignName, description, campaignType, startDate, endDate, startTime, endTime, status, assetIds } = req.body;
+  const { campaignName, description, campaignText, campaignType, startDate, endDate, startTime, endTime, status, assetIds } = req.body;
 
   try {
     const campaign = await Campaign.findById(req.params.id);
@@ -179,6 +181,7 @@ export const updateCampaign = async (req, res) => {
     // Update attributes
     campaign.campaignName = campaignName !== undefined ? campaignName : campaign.campaignName;
     campaign.description = description !== undefined ? description : campaign.description;
+    campaign.campaignText = campaignText !== undefined ? campaignText : campaign.campaignText;
     campaign.campaignType = campaignType !== undefined ? campaignType : campaign.campaignType;
     campaign.status = status !== undefined ? status : campaign.status;
     campaign.startDate = startDate !== undefined ? new Date(startDate) : campaign.startDate;

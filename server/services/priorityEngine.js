@@ -202,6 +202,54 @@ export const getActiveContentForBoard = async (boardId) => {
       }
     });
 
+    // Map Text-only Campaigns (if any) or Campaigns with campaignText
+    activeCampaigns.forEach(campaign => {
+      if (campaign.campaignText && campaign.campaignText.trim()) {
+        // Determine Priority from Campaign Name/Type according to the priority hierarchy
+        let priority = 60; // Default: Standard Campaign (60)
+        let type = 'Standard Campaign';
+
+        const nameLower = campaign.campaignName.toLowerCase();
+        const typeLower = (campaign.campaignType || '').toLowerCase();
+
+        if (nameLower.includes('emergency') || nameLower.includes('alert')) {
+          priority = 100;
+          type = 'Emergency Alert';
+        } else if (nameLower.includes('government') || nameLower.includes('announcement') || nameLower.includes('gov') || typeLower === 'public information') {
+          priority = 90;
+          type = 'Government Announcement';
+        } else if (nameLower.includes('premium') || nameLower.includes('sponsorship') || nameLower.includes('sponsor')) {
+          priority = 80;
+          type = 'Premium Campaign';
+        } else if (nameLower.includes('event') || nameLower.includes('festival') || typeLower === 'sports' || typeLower === 'entertainment') {
+          priority = 70;
+          type = 'Event Campaign';
+        } else if (nameLower.includes('community') || nameLower.includes('local') || nameLower.includes('charity') || typeLower === 'religious & cultural') {
+          priority = 50;
+          type = 'Community Campaign';
+        } else if (nameLower.includes('standard') || nameLower.includes('general')) {
+          priority = 60;
+          type = 'Standard Campaign';
+        }
+
+        playlist.push({
+          _id: campaign._id.toString() + '_text',
+          id: campaign._id.toString() + '_text',
+          title: campaign.campaignName,
+          type: type,
+          assetType: 'Text',
+          severity: 'Info',
+          priority: priority,
+          fileUrl: '',
+          textContent: campaign.campaignText,
+          duration: 10, // Text default duration is 10s
+          expiryTime: campaign.endDate,
+          startTime: campaign.startDate,
+          campaignId: campaign._id
+        });
+      }
+    });
+
     // Add Fallback Cached Playlist item if empty (Priority 10)
     if (playlist.length === 0) {
       playlist.push({

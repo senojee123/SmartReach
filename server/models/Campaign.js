@@ -16,6 +16,10 @@ const campaignSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  campaignText: {
+    type: String,
+    default: ''
+  },
   campaignType: {
     type: String,
     required: true,

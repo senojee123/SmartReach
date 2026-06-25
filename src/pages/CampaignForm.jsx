@@ -11,6 +11,7 @@ const CampaignForm = () => {
   // Form fields state
   const [campaignName, setCampaignName] = useState('');
   const [description, setDescription] = useState('');
+  const [campaignText, setCampaignText] = useState('');
   const [campaignType, setCampaignType] = useState('');
   const [status, setStatus] = useState('Draft');
   const [startDate, setStartDate] = useState('');
@@ -36,6 +37,7 @@ const CampaignForm = () => {
           const { data } = await api.get(`/campaigns/${id}`);
           setCampaignName(data.campaignName);
           setDescription(data.description || '');
+          setCampaignText(data.campaignText || '');
           setCampaignType(data.campaignType);
           setStatus(data.status);
           
@@ -84,6 +86,7 @@ const CampaignForm = () => {
     const payload = {
       campaignName: campaignName.trim(),
       description: description.trim(),
+      campaignText: campaignText.trim(),
       campaignType,
       status,
       startDate,
@@ -193,6 +196,21 @@ const CampaignForm = () => {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Details about the campaign purpose..."
+                className="mt-1 block w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-slate-950 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-colors resize-none"
+              />
+            </div>
+
+            {/* Campaign Text Content */}
+            <div>
+              <label htmlFor="campaignText" className="block text-sm font-medium text-slate-700">
+                Campaign Text (Optional)
+              </label>
+              <textarea
+                id="campaignText"
+                rows={3}
+                value={campaignText}
+                onChange={(e) => setCampaignText(e.target.value)}
+                placeholder="Enter text to display directly on kiosk display screens..."
                 className="mt-1 block w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-slate-950 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-colors resize-none"
               />
             </div>
