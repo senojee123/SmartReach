@@ -47,7 +47,7 @@ const BoardRouteWrapper = ({ boardType }) => {
     );
   }
 
-  return <Player boardId={boardId} />;
+  return <Player boardIdProp={boardId} />;
 };
 
 export default BoardRouteWrapper;
