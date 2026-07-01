@@ -43,8 +43,10 @@ export const getActiveContentForBoard = async (boardId) => {
     const campaignIds = campaignTargets.map(t => t.campaignId);
     const relatedCampaigns = await Campaign.find({ _id: { $in: campaignIds }, status: 'Active' });
     const activeCampaigns = relatedCampaigns.filter(c => {
-      // Normalize dates to midnight to perform calendar day comparisons
-      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      // Resolve current date and time in Sri Lanka timezone (Asia/Colombo)
+      const colomboDateStr = new Date().toLocaleDateString('en-US', { timeZone: 'Asia/Colombo' });
+      const colomboDate = new Date(colomboDateStr);
+      const today = new Date(colomboDate.getFullYear(), colomboDate.getMonth(), colomboDate.getDate());
       
       const campaignStartVal = new Date(c.startDate);
       const campaignStartDay = new Date(campaignStartVal.getFullYear(), campaignStartVal.getMonth(), campaignStartVal.getDate());
@@ -55,10 +57,10 @@ export const getActiveContentForBoard = async (boardId) => {
       const isDateActive = campaignStartDay <= today && campaignEndDay >= today;
       if (!isDateActive) return false;
 
-      // Extract current local time in HH:MM format
-      const currentHours = String(now.getHours()).padStart(2, '0');
-      const currentMinutes = String(now.getMinutes()).padStart(2, '0');
-      const currentTimeStr = `${currentHours}:${currentMinutes}`;
+      // Extract current time in HH:MM format in Sri Lanka timezone
+      const colomboTimeStr = new Date().toLocaleTimeString('en-US', { timeZone: 'Asia/Colombo', hour12: false });
+      const [colomboHours, colomboMinutes] = colomboTimeStr.split(':');
+      const currentTimeStr = `${colomboHours.padStart(2, '0')}:${colomboMinutes.padStart(2, '0')}`;
 
       const campaignStart = c.startTime || '00:00';
       const campaignEnd = c.endTime || '23:59';
