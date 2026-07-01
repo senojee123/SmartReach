@@ -249,6 +249,7 @@ export const getDeviceConfig = async (req, res) => {
     if (!board) {
       return res.status(200).json({
         board: 'sports',
+        boardId: null,
         refreshInterval: 10,
         activeAlert: activeAlert ? {
           id: activeAlert._id,
@@ -265,6 +266,7 @@ export const getDeviceConfig = async (req, res) => {
 
     res.status(200).json({
       board: mapBoardTypeToChannel(board.boardType),
+      boardId: board._id,
       refreshInterval: 10,
       activeAlert: activeAlert ? {
         id: activeAlert._id,

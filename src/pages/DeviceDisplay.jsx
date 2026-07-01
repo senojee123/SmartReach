@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { Loader2, RefreshCw } from 'lucide-react';
 import BoardRouteWrapper from './BoardRouteWrapper';
+import Player from './Player';
 
 const DeviceDisplay = () => {
   const { deviceId } = useParams();
@@ -117,7 +118,11 @@ const DeviceDisplay = () => {
           ⚠️ EMERGENCY OVERRIDE ACTIVE
         </div>
       )}
-      <BoardRouteWrapper boardType={boardType} />
+      {config && config.boardId && !isAlertOverride ? (
+        <Player boardIdProp={config.boardId} />
+      ) : (
+        <BoardRouteWrapper boardType={boardType} />
+      )}
     </div>
   );
 };
