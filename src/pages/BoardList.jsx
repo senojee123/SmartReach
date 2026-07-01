@@ -246,6 +246,8 @@ const BoardList = () => {
                   </th>
                   <th scope="col" className="px-6 py-4">Location</th>
                   <th scope="col" className="px-6 py-4">Type</th>
+                  <th scope="col" className="px-6 py-4">Device ID</th>
+                  <th scope="col" className="px-6 py-4">IP Address</th>
                   <th scope="col" className="px-6 py-4">Status</th>
                   <th 
                     scope="col" 
@@ -275,6 +277,12 @@ const BoardList = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {getBoardTypeBadge(board.boardType)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap font-mono text-xs text-slate-500">
+                      {board.deviceId || <span className="text-slate-300 italic">None</span>}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap font-mono text-xs text-slate-500">
+                      {board.ipAddress || <span className="text-slate-300 italic">-</span>}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {getStatusBadge(board.status)}

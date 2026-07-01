@@ -130,13 +130,20 @@ export const getBoardById = async (req, res) => {
 // @route   POST /api/boards
 // @access  Private
 export const createBoard = async (req, res) => {
-  const { boardName, location, region, boardType, status } = req.body;
+  const { boardName, location, region, boardType, status, deviceId } = req.body;
 
   if (!boardName || !location || !region || !boardType) {
     return res.status(400).json({ message: 'Please provide all required fields' });
   }
 
   try {
+    if (deviceId) {
+      const existing = await Board.findOne({ deviceId });
+      if (existing) {
+        return res.status(400).json({ message: 'Device ID is already assigned to another smartboard' });
+      }
+    }
+
     const boardId = await generateBoardId();
 
     const board = await Board.create({
@@ -146,6 +153,7 @@ export const createBoard = async (req, res) => {
       region,
       boardType,
       status: status || 'Offline',
+      deviceId: deviceId || null,
       lastSeen: new Date()
     });
 
@@ -159,7 +167,7 @@ export const createBoard = async (req, res) => {
 // @route   PUT /api/boards/:id
 // @access  Private
 export const updateBoard = async (req, res) => {
-  const { boardName, location, region, boardType, status } = req.body;
+  const { boardName, location, region, boardType, status, deviceId } = req.body;
 
   try {
     const board = await Board.findById(req.params.id);
@@ -168,12 +176,23 @@ export const updateBoard = async (req, res) => {
       return res.status(404).json({ message: 'Board not found' });
     }
 
+    if (deviceId && deviceId !== board.deviceId) {
+      const existing = await Board.findOne({ deviceId });
+      if (existing) {
+        return res.status(400).json({ message: 'Device ID is already assigned to another smartboard' });
+      }
+    }
+
     // Update fields
     board.boardName = boardName !== undefined ? boardName : board.boardName;
     board.location = location !== undefined ? location : board.location;
     board.region = region !== undefined ? region : board.region;
     board.boardType = boardType !== undefined ? boardType : board.boardType;
     board.status = status !== undefined ? status : board.status;
+    
+    if (deviceId !== undefined) {
+      board.deviceId = deviceId.trim() || null;
+    }
 
     // Update lastSeen to current time if status is updated to Active
     if (status === 'Active') {

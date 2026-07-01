@@ -14,6 +14,7 @@ const BoardForm = () => {
   const [region, setRegion] = useState('');
   const [boardType, setBoardType] = useState('');
   const [status, setStatus] = useState('Offline');
+  const [deviceId, setDeviceId] = useState('');
 
   // Page states
   const [loading, setLoading] = useState(false);
@@ -32,6 +33,7 @@ const BoardForm = () => {
           setRegion(data.region);
           setBoardType(data.boardType);
           setStatus(data.status);
+          setDeviceId(data.deviceId || '');
         } catch (err) {
           console.error('Error fetching board details:', err);
           setError('Failed to fetch board details. The board may not exist.');
@@ -58,7 +60,8 @@ const BoardForm = () => {
       location: location.trim(),
       region: region.trim(),
       boardType,
-      status
+      status,
+      deviceId: deviceId.trim() || null
     };
 
     try {
@@ -162,6 +165,22 @@ const BoardForm = () => {
                 required
               />
             </div>
+          </div>
+
+          {/* Hardware Device ID Link */}
+          <div>
+            <label htmlFor="deviceId" className="block text-sm font-medium text-slate-700">
+              Hardware Device ID (Optional)
+            </label>
+            <input
+              type="text"
+              id="deviceId"
+              value={deviceId}
+              onChange={(e) => setDeviceId(e.target.value.toLowerCase())}
+              placeholder="e.g. pi-001"
+              className="mt-1 block w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-slate-950 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-colors"
+            />
+            <p className="text-xs text-slate-400 mt-1">Associate a physical Raspberry Pi device ID (e.g. pi-001) to control it remotely.</p>
           </div>
 
           {/* Board Type & Status */}

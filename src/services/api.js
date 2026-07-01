@@ -1,11 +1,44 @@
 import axios from 'axios';
 
+// Dynamically resolve the backend API base URL
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: import.meta.env.VITE_API_URL || '/api',
   headers: {
     'Content-Type': 'application/json'
   }
 });
+
+// Helper to resolve the root backend host (removes /api suffix if present)
+const getBackendBaseUrl = () => {
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL.replace(/\/api$/, '');
+  }
+  return '';
+};
+
+// Recursively walks the response payload to rewrite relative uploads paths to absolute URL
+const rewriteUploadUrls = (obj, baseUrl) => {
+  if (!obj || !baseUrl) return obj;
+  if (typeof obj === 'string') {
+    if (obj.startsWith('/uploads/')) {
+      return `${baseUrl}${obj}`;
+    }
+    return obj;
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(item => rewriteUploadUrls(item, baseUrl));
+  }
+  if (typeof obj === 'object') {
+    const newObj = {};
+    for (const key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        newObj[key] = rewriteUploadUrls(obj[key], baseUrl);
+      }
+    }
+    return newObj;
+  }
+  return obj;
+};
 
 // Add request interceptor to attach token
 api.interceptors.request.use(
@@ -21,9 +54,15 @@ api.interceptors.request.use(
   }
 );
 
-// Add response interceptor to handle global errors (like 401 Unauthorized)
+// Add response interceptor to handle global errors and rewrite asset URLs in production
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    const baseUrl = getBackendBaseUrl();
+    if (response.data && baseUrl) {
+      response.data = rewriteUploadUrls(response.data, baseUrl);
+    }
+    return response;
+  },
   (error) => {
     if (error.response && error.response.status === 401) {
       localStorage.removeItem('token');

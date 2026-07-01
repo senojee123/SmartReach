@@ -55,6 +55,9 @@ class MockBoard {
     } else if (query.boardId) {
       boards = boards.filter(b => b.boardId === query.boardId);
     }
+    if (query.deviceId) {
+      boards = boards.filter(b => b.deviceId === query.deviceId);
+    }
 
     const sortFn = (sortObj) => {
       const field = Object.keys(sortObj)[0];
@@ -83,6 +86,11 @@ class MockBoard {
   static find(query = {}) {
     const db = readDb();
     let results = [...db.boards];
+
+    // Filter by deviceId
+    if (query.deviceId) {
+      results = results.filter(b => b.deviceId === query.deviceId);
+    }
 
     // Filter by _id
     if (query._id) {
@@ -242,6 +250,8 @@ class MockBoard {
       storageUsage: data.storageUsage || 0,
       syncStatus: data.syncStatus || 'Synced',
       uptime: data.uptime || 0,
+      deviceId: data.deviceId || null,
+      ipAddress: data.ipAddress || '',
       lastSeen: new Date().toISOString(),
       createdAt: new Date().toISOString()
     };

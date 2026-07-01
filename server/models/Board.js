@@ -59,6 +59,17 @@ const boardSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  deviceId: {
+    type: String,
+    unique: true,
+    sparse: true,
+    trim: true,
+    default: null
+  },
+  ipAddress: {
+    type: String,
+    default: ''
+  },
   lastSeen: {
     type: Date,
     default: Date.now

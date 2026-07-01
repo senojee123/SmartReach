@@ -15,12 +15,13 @@ import CampaignTargeting from './pages/CampaignTargeting';
 import CampaignPreview from './pages/CampaignPreview';
 import AssetLibrary from './pages/AssetLibrary';
 import Player from './pages/Player';
-import { SportsPlayer, FestivalPlayer, AdsPlayer, AlertsPlayer } from './pages/ScreenWrappers';
 import MonitoringDashboard from './pages/MonitoringDashboard';
 import AnalyticsDashboard from './pages/AnalyticsDashboard';
 import SponsorReporting from './pages/SponsorReporting';
 import EngagementPage from './pages/EngagementPage';
 import LiveNetworkDemo from './pages/LiveNetworkDemo';
+import BoardRouteWrapper from './pages/BoardRouteWrapper';
+import DeviceDisplay from './pages/DeviceDisplay';
 
 
 function App() {
@@ -62,12 +63,13 @@ function App() {
           {/* Standalone Player Screen */}
           <Route path="/player" element={<Player />} />
           <Route path="/player/:boardId" element={<Player />} />
+          <Route path="/device/:deviceId" element={<DeviceDisplay />} />
 
-          {/* Standalone Kiosk Screen Routes */}
-          <Route path="/sports" element={<SportsPlayer />} />
-          <Route path="/festival" element={<FestivalPlayer />} />
-          <Route path="/ads" element={<AdsPlayer />} />
-          <Route path="/alerts" element={<AlertsPlayer />} />
+          {/* Standalone Kiosk Routes */}
+          <Route path="/sports" element={<BoardRouteWrapper boardType="Sports" />} />
+          <Route path="/festival" element={<BoardRouteWrapper boardType="Religious & Cultural" />} />
+          <Route path="/ads" element={<BoardRouteWrapper boardType="Entertainment" />} />
+          <Route path="/alerts" element={<BoardRouteWrapper boardType="Public Information" />} />
 
           {/* Live Demo Network */}
           <Route path="/demo/live-network" element={<LiveNetworkDemo />} />

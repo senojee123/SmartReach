@@ -15,6 +15,7 @@ import engagementRoutes from './routes/engagementRoutes.js';
 import contentRoutes from './routes/contentRoutes.js';
 import alertRoutes from './routes/alertRoutes.js';
 import demoRoutes from './routes/demoRoutes.js';
+import deviceRoutes from './routes/deviceRoutes.js';
 
 // Resolve directory name
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -46,6 +47,7 @@ app.use('/api/engagement', engagementRoutes);
 app.use('/api/content', contentRoutes);
 app.use('/api/alerts', alertRoutes);
 app.use('/api/demo', demoRoutes);
+app.use('/api/devices', deviceRoutes);
 
 // Health Check API
 app.get('/api/health', (req, res) => {
