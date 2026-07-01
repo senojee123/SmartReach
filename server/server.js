@@ -1,6 +1,6 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import connectDB from './config/db.js';
@@ -20,8 +20,7 @@ import deviceRoutes from './routes/deviceRoutes.js';
 // Resolve directory name
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Load environment variables
-dotenv.config();
+
 
 // Connect to MongoDB
 await connectDB();
